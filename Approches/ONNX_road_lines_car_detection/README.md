@@ -124,8 +124,11 @@ Below is a short version:
 
 <img src="./demo/bird_eye_view.gif" controls width="640" height="360"></img>
 
+<img src="./demo/onnx_bird_eye.gif" controls width="640" height="360"></img>
+
 <img src="./demo/video_example.gif" controls width="640" height="360"></img>
 
+<img src="./demo/onnx_road_detection.gif" controls width="640" height="360"></img>
 
 ### TFLite
 1. After building (as described in [Section 6](#building-the-project-tflite-in-linuxwsl)), run the `./main` binary.
@@ -141,6 +144,9 @@ This way, you will build and run the TFLite project based on HybridNets. If you 
 ### with video:
 
 <img src="./demo/onnx_tflite_detection.gif" controls width="640" height="360"></img>
+
+<img src="./demo/tflite_onnx.gif" controls width="640" height="360"></img>
+
 
 ---
 

@@ -190,6 +190,8 @@ The script will display detections in real-time or write the annotated output to
 
 <img src="./demo/yolov8_visualisation.gif" controls width="640" height="360"></img>
 
+<img src="./demo/road_detection_pt.gif" controls width="640" height="360"></img>
+
 
 ---
 
