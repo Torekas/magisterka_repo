@@ -188,9 +188,8 @@ python live.py --weights Models/fine_tuned_yolov8s.pt --source test_images/test_
 
 The script will display detections in real-time or write the annotated output to a new video file (depending on how you implement it).
 
-<video src="./demo/visualisation.mp4" controls width="640" height="360">
-[visualisation.mp4](demo%2Fvisualisation.mp4)
-</video>
+<img src="./demo/yolov8_visualisation.gif" controls width="640" height="360"></img>
+
 
 ---
 

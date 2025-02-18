@@ -138,8 +138,8 @@ This way, you will build and run the TFLite project based on HybridNets. If you 
 <img src="./demo/demo.jpg" controls width="640" height="360"></img>
 
 ### with video:
-<video src="./demo/onnx_tflite.mp4" controls width="640" height="360">
-</video>
+
+<img src="./demo/onnx_tflite_detection.gif" controls width="640" height="360"></img>
 
 ---
 
