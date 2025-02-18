@@ -119,6 +119,8 @@ Below are some example images showing model performance, accuracy, and loss curv
 
 <img src="./demo/0000000271.png" controls width="640" height="360"></img>
 
+<img src="./demo/yolov5_detection.gif" controls width="640" height="360"></img>
+
 ---
 
 ## Contributing
