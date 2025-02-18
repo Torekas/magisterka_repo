@@ -1,3 +1,4 @@
+
 ---
 
 # Road and Vehicle Detection Using HybridNets (ONNX / TFLite)
@@ -81,7 +82,7 @@ Then go to the `pj_tflite_perception_hybrid_nets` directory, where the HybridNet
    sh download.sh
    ```
 3. Once the download is complete, in the `276_HybridNets` directory you will find, among others, the files:
-   - `hybridnets_384x640/model_float32.tflite`
+   - `hybridnets_384x640/hybridnets_384x640.tflite`
    - `hybridnets_384x640/hybridnets_384x640.onnx`
 
 4. Copy the appropriate models to your project:  

@@ -117,7 +117,7 @@ Aleo the experiments are saved into your comet-ml account.
 
 Below are some example images showing model performance, accuracy, and loss curves during training, as well as detection outputs:
 
-*(Insert screenshots or plots of your training results, e.g. `results.png`, sample detections, confusion matrix, etc.)*
+<img src="./demo/0000000271.png" controls width="640" height="360"></img>
 
 ---
 

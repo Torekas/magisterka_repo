@@ -1,3 +1,4 @@
+
 ---
 
 # YOLOv8 Road Object Detection
@@ -159,7 +160,6 @@ We use the Ultralytics YOLOv8 environment for training:
    cd road_detection_model
    python train.py --config data_finetune.yaml --epochs 50 --batch-size 16
    ```
-   *(Adapt the command-line arguments as needed.)*
 
 4. **Models**:
    - `yolov8n.pt` is a smaller, faster YOLOv8 model.

@@ -74,7 +74,8 @@ We use **PyTorch** to train the model. In a sample Jupyter notebook (`.ipynb`):
 5. **Save the model**:  
    - After training completes, you can save the model to a `.pth` or `.pt` file, for example:
      ```python
-     torch.save(model.state_dict(), 'weather_classification_model.pth')
+     weather_classification = ['fog', 'night', 'rain', 'snow']
+     torch.save(model.state_dict(), f'{weather_classification}_model.pth')
      ```
 6. **Evaluate** the model on the test set to gauge accuracy in distinguishing different weather conditions.
 
