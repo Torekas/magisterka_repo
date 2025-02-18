@@ -1,13 +1,14 @@
 # Master Thesis
 
-Ta praca dotyczyć będzie inteligentych światłem Matrix w samochodach. W oparciu o różne podele będe starał się znaleźć jak najelpsze rozwiązanie w wykrywaniu najbardziej istotnych elemntów dla kierowcy na drodze. 
+This thesis focuses on intelligent Matrix headlights in automobiles. The goal is to identify the best possible solution for detecting the most crucial elements on the road for drivers, leveraging various models.
 
-Obecnie w repozytorium znajdują się różne podejścia takie jak:
-- **Rozróżnianie dnia i nocy.**
-- **Rozróżnianie różnych wrunków pogodowych takich jak śnieg, deszcz, mgła czy też noc w oparciu o inne zdjęcia.**
-- **Wykrywanie elementów ważnych dla kierowcy na drodze, znaki piesi, auta, droga. Obecnie tutaj korzystam z trzech rozwiązań:
-  - **Rozwiązanie przy użyciu modelu Yolov5.**
-  - **Rozwiązanie przy użyciu modelu Yolov8.**
-  - **Rozwiązanie przy użyciu modelu ONNX.**
+Currently, this repository contains several approaches, including:
 
-Do każdego z podejść został dołączony plik *.ipynb mający na celu wyjasnić kroki które zostały wykonane w każdym z przypadków
+- **Distinguishing between day and night.**  
+- **Recognizing different weather conditions (snow, rain, fog, and night) based on diverse image sets.**  
+- **Detecting important road elements such as traffic signs, pedestrians, vehicles, and the roadway itself. Three solutions are used here:**  
+  - **A solution using the YOLOv5 model.**  
+  - **A solution using the YOLOv8 model.**  
+  - **A solution leveraging an ONNX-based model.**
+
+Each approach is accompanied by a dedicated *.ipynb notebook, which explains the steps taken in each case.
