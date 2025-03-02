@@ -12,3 +12,6 @@ Currently, this repository contains several approaches, including:
   - **A solution leveraging an ONNX-based model.**
 
 Each approach is accompanied by a dedicated *.ipynb notebook, which explains the steps taken in each case.
+
+## Workflow Pipeline
+<img src="./demo/Workflow.png" controls width="640" height="360"></img>
