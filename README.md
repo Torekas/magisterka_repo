@@ -13,5 +13,8 @@ Currently, this repository contains several approaches, including:
 
 Each approach is accompanied by a dedicated *.ipynb notebook, which explains the steps taken in each case.
 
-## Workflow Pipeline
+## Workflow Pipeline (v2)
+<img src="./demo/Workflow_v2.png" controls width="640" height="360"></img>
+
+## Workflow Pipeline (v1)
 <img src="./demo/Workflow.png" controls width="640" height="360"></img>
