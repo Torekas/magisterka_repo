@@ -10,11 +10,25 @@ Currently, this repository contains several approaches, including:
   - **A solution using the YOLOv5 model.**  
   - **A solution using the YOLOv8 model.**  
   - **A solution leveraging an ONNX-based model.**
+- **Segmention of the road with different approaches**
+  - **SegFormer**
+  - **YOLOP**
+  - **U-Net + ResNet-34**
+  - **DeepLabV3+ResNet-50/100**
+
+- **And finally the whole working simulator as a combination of the all components with the mechanism of steering the matrix headlights**
+- **And possbile future work on building the prototype, how it should work**
 
 Each approach is accompanied by a dedicated *.ipynb notebook, which explains the steps taken in each case.
 
 ## Workflow Pipeline (v2)
-<img src="./demo/Workflow_v2_1.png" controls width="640" height="360"></img>
+<img src="./demo/workflow_master_thesis.png" controls width="640" height="360"></img>
+
+[//]: # (<img src="./demo/Workflow_v2_1.png" controls width="640" height="360"></img>)
 
 ## Workflow Pipeline (v1)
 <img src="./demo/Workflow.png" controls width="640" height="360"></img>
+
+## Comet ML
+Whole results are also stored in the dedicated experiments on the Comet ML platform:
+<img src="./demo/comet.png" controls width="640" height="360"></img>

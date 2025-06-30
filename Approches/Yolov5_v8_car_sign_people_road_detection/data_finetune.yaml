@@ -1,0 +1,13 @@
+train: C:\Users\janmi\PycharmProjects\road_detection_model\road_detection_model\datasets\images\trains
+val: C:\Users\janmi\PycharmProjects\road_detection_model\road_detection_model\datasets\images\valids
+test: C:\Users\janmi\PycharmProjects\road_detection_model\road_detection_model\datasets\images\test
+
+nc: 4
+names: ['Car', 'Road', 'Sign', 'People']
+
+roboflow:
+  workspace: roaddetectiondataset
+  project: roaddetectiom-z_ramka
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/roaddetectiondataset/roaddetectiom-z_ramka/dataset/1
