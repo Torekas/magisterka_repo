@@ -8,7 +8,7 @@ This thesis focuses on intelligent Matrix headlights in automobiles. The goal is
 Currently, this repository contains several approaches, including:
 
 * **Distinguishing between day and night.**
-* **Recognizing different weather conditions** (snow, rain, fog, and night) based on diverse image sets.
+* **Recognizing different weather conditions** (snow, rain, fog) based on diverse image sets.
 * **Detecting important road elements** such as traffic signs, pedestrians, vehicles, and the roadway itself. Three solutions are used here:
 
   * **A solution using the YOLOv5 model.**
@@ -23,7 +23,7 @@ Currently, this repository contains several approaches, including:
 * **A full working simulator** that combines all components with a mechanism for steering the matrix headlights.
 * **Future work**: possible prototype design and deployment concepts.
 
-Each approach is accompanied by a dedicated `.ipynb` notebook, which explains the steps taken in each case.
+Each approach is accompanied by a dedicated `.ipynb` notebook or `.py` file in each approach subfolder, which explains the steps taken in each case.
 
 ---
 
@@ -108,10 +108,10 @@ Each approach is accompanied by a dedicated `.ipynb` notebook, which explains th
 ---
 
 # Simulator in action
-<table>
+<table align = "center">
   <tr>
     <td align="center"><b>Simulator in action</b><br>
-      <img src="./demo/gif_master_thesis.gif" width="320" alt="YOLOv5 Inference GIF"/>
+      <img src="./demo/gif_master_thesis.gif" width="920" height="220" alt="YOLOv5 Inference GIF"/>
     </td>
   </tr>
 </table>

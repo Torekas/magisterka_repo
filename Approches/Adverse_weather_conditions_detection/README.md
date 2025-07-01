@@ -138,6 +138,4 @@ To train and evaluate models:
 
 * `adverse_weather_detection.ipynb` — Main notebook for preprocessing, training, evaluation, and reporting.
 
-  * *See in-code comments for details on every function and step.*
-
 ---

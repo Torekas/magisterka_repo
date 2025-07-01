@@ -20,9 +20,11 @@ from albumentations.pytorch import ToTensorV2
 #######################################
 def enhance_night_image(pil_img):
     """
-    Applies several image enhancement techniques for night-time images:
-    - Denoising, CLAHE on Y-channel, and gamma correction.
-    Returns: enhanced PIL.Image
+    Applies denoising, CLAHE, and gamma correction for night-time image enhancement.
+    Args:
+        pil_img: Input image (PIL.Image).
+    Returns:
+        Enhanced image (PIL.Image).
     """
     img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
     img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
@@ -46,11 +48,19 @@ IMG_STD  = [0.229, 0.224, 0.225]
 
 class RoadLaneDataset(Dataset):
     """
-    Custom Dataset for (optionally enhanced) night images + road/lane masks.
-    Combines two mask files into a single target: 0=background, 1=road, 2=lane.
+    Custom Dataset for optionally enhanced night images + combined road/lane masks.
     """
     def __init__(self, image_dir, road_mask_dir, lane_mask_dir,
                  night_enhance=True, transform=None, target_size=(1392, 512)):
+        """
+        Args:
+            image_dir: Directory containing images.
+            road_mask_dir: Directory with road masks.
+            lane_mask_dir: Directory with lane masks.
+            night_enhance: Whether to enhance images for night.
+            transform: Albumentations or other transform pipeline.
+            target_size: Size to resize all images/masks to (width, height).
+        """
         self.image_dir     = image_dir
         self.road_mask_dir = road_mask_dir
         self.lane_mask_dir = lane_mask_dir
@@ -64,9 +74,22 @@ class RoadLaneDataset(Dataset):
         ])
 
     def __len__(self):
+        """
+        Returns:
+            Number of samples in the dataset.
+        """
         return len(self.image_files)
 
     def __getitem__(self, idx):
+        """
+        Load (optionally enhanced) image and combine masks.
+        Args:
+            idx: Index of the sample.
+        Returns:
+            Tuple: (image tensor, mask tensor).
+                - image: torch.Tensor, shape [3, H, W]
+                - mask: torch.Tensor, shape [H, W], type long
+        """
         # Load and optionally enhance the image
         img_name = self.image_files[idx]
         img_path = os.path.join(self.image_dir, img_name)
@@ -111,10 +134,22 @@ class DiceLoss(nn.Module):
     Dice loss for multiclass segmentation (differentiable IoU proxy).
     """
     def __init__(self, eps=1e-6):
+        """
+        Args:
+            eps: Small constant to avoid division by zero.
+        """
         super().__init__()
         self.eps = eps
 
     def forward(self, logits, target):
+        """
+        Compute Dice loss between logits and target mask.
+        Args:
+            logits: Model outputs of shape [N, C, H, W].
+            target: Ground truth mask of shape [N, H, W].
+        Returns:
+            Dice loss (scalar tensor).
+        """
         num_cls   = logits.shape[1]
         prob      = F.softmax(logits, dim=1)
         tgt_onehot= F.one_hot(target, num_classes=num_cls).permute(0,3,1,2).float()
@@ -126,7 +161,11 @@ class DiceLoss(nn.Module):
 def get_loss(num_classes, device):
     """
     Returns a combined loss: weighted CrossEntropy + 0.5 * Dice.
-    Weights penalize missing lane pixels more.
+    Args:
+        num_classes: Number of output classes.
+        device: Torch device for weights.
+    Returns:
+        Callable loss function: (logits, masks) -> loss tensor.
     """
     weights = torch.tensor([1.0, 1.0, 2.0], device=device)
     ce      = nn.CrossEntropyLoss(weight=weights)
@@ -138,7 +177,11 @@ def get_loss(num_classes, device):
 #######################################
 def get_unet_model(num_classes):
     """
-    Returns a UNet with ResNet34 encoder, pretrained on ImageNet, and adapted for num_classes.
+    Returns a pretrained UNet with ResNet34 encoder and new head for num_classes.
+    Args:
+        num_classes: Number of segmentation classes.
+    Returns:
+        smp.Unet model instance.
     """
     return smp.Unet(
         encoder_name    = "resnet34",
@@ -153,15 +196,25 @@ def get_unet_model(num_classes):
 #######################################
 def save_checkpoint(state, checkpoint_dir, filename='checkpoint.pth'):
     """
-    Saves the model and optimizer state dicts to disk.
+    Saves model and optimizer state dicts to disk.
+    Args:
+        state: Dict with keys 'epoch', 'model_state', 'opt_state'.
+        checkpoint_dir: Directory to save checkpoint.
+        filename: File name (default: 'checkpoint.pth').
     """
     os.makedirs(checkpoint_dir, exist_ok=True)
     torch.save(state, os.path.join(checkpoint_dir, filename))
 
 def load_checkpoint(model, optimizer, checkpoint_dir, filename='checkpoint.pth'):
     """
-    Loads model and optimizer state dicts from disk, resuming at the next epoch.
-    Returns: epoch to start at (int)
+    Loads model and optimizer state dicts from disk, resuming at next epoch.
+    Args:
+        model: Model instance to restore weights.
+        optimizer: Optimizer instance to restore state.
+        checkpoint_dir: Directory of checkpoints.
+        filename: File name (default: 'checkpoint.pth').
+    Returns:
+        Epoch to start at (int).
     """
     path = os.path.join(checkpoint_dir, filename)
     if os.path.isfile(path):
@@ -177,7 +230,15 @@ def load_checkpoint(model, optimizer, checkpoint_dir, filename='checkpoint.pth')
 #######################################
 def train_one_epoch(model, loader, opt, loss_fn, device):
     """
-    Trains for one epoch and returns average loss.
+    Train the model for one epoch and return average loss.
+    Args:
+        model: Model to train.
+        loader: Training DataLoader.
+        opt: Optimizer.
+        loss_fn: Loss function.
+        device: Device to train on.
+    Returns:
+        Average loss (float).
     """
     model.train()
     total_loss   = 0.0
@@ -198,6 +259,13 @@ def train_one_epoch(model, loader, opt, loss_fn, device):
 def evaluate_iou(model, loader, device, num_classes):
     """
     Evaluates per-class Intersection-over-Union (IoU) on validation data.
+    Args:
+        model: Trained model to evaluate.
+        loader: Validation DataLoader.
+        device: Device to evaluate on.
+        num_classes: Number of segmentation classes.
+    Returns:
+        List of IoU values (float) for each class.
     """
     model.eval()
     ints, uns = [0]*num_classes, [0]*num_classes
@@ -214,6 +282,10 @@ def evaluate_iou(model, loader, device, num_classes):
 #               Main                  #
 #######################################
 def main():
+    """
+    Main function: sets up experiment, dataloaders, model, optimizer,
+    runs training and evaluation loop, saves checkpoints and logs metrics.
+    """
     # --- Comet Experiment Setup ---
     experiment = Experiment(
         api_key="Zfgk7BYvTUyWQWSh7g1M8SSt2",

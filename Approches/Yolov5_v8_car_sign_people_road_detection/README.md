@@ -249,11 +249,6 @@ Based on training curves (first 100 epochs) and a composite score summary:
       <img src="./demo/output (4).png" width="320" alt="YOLOv8 mAP@0.5"/>
     </td>
   </tr>
-  <tr>
-    <td align="center" colspan="2"><b>Composite Table Summary</b><br>
-      <img src="./demo/composite_table_yolo (1).png" width="200" alt="Composite Table"/>
-    </td>
-  </tr>
 </table>
 
 ### Trade-Offs

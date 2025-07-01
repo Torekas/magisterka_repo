@@ -42,7 +42,13 @@ _CLAHE = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 def fog_preprocess(img_bgr, t0=0.1, omega=0.95, r=3):
     """
     Simple, fast dark-channel dehaze for foggy scenes.
-    Args: img_bgr: input BGR image, returns dehazed BGR image.
+    Args:
+        img_bgr: input BGR image as a NumPy array (H, W, 3), dtype uint8.
+        t0: minimum transmission threshold.
+        omega: haze amount multiplier.
+        r: erosion window radius for dark channel.
+    Returns:
+        Dehazed BGR image as NumPy array, dtype uint8.
     """
     I = img_bgr.astype(np.float32) / 255.0
     # Estimate air-light (atmospheric light)
@@ -59,7 +65,15 @@ def fog_preprocess(img_bgr, t0=0.1, omega=0.95, r=3):
     return np.uint8(np.clip(J * 255, 0, 255))
 
 def rain_preprocess(img_bgr, v_clip=0.85, gamma=0.8):
-    """Suppress specular highlights (e.g. from rain) in a BGR frame."""
+    """
+    Suppress specular highlights (e.g. from rain) in a BGR frame.
+    Args:
+        img_bgr: input BGR image as NumPy array, dtype uint8.
+        v_clip: value threshold for highlight detection.
+        gamma: brightness reduction factor for highlights.
+    Returns:
+        BGR image with suppressed highlights as NumPy array.
+    """
     hsv   = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV).astype(np.float32)
     h, s, v = cv2.split(hsv)
     spec   = (s < 40) & (v > v_clip*255)
@@ -68,7 +82,14 @@ def rain_preprocess(img_bgr, v_clip=0.85, gamma=0.8):
     return cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
 
 def snow_preprocess(img_bgr, gamma=1.4):
-    """Darken and equalize bright snowy regions in a BGR frame."""
+    """
+    Darken and equalize bright snowy regions in a BGR frame.
+    Args:
+        img_bgr: input BGR image as NumPy array, dtype uint8.
+        gamma: exponent for gamma correction.
+    Returns:
+        Preprocessed BGR image with local histogram equalization.
+    """
     img = np.power(img_bgr / 255.0, gamma)
     img = (img * 255).astype(np.uint8)
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -81,6 +102,15 @@ def snow_preprocess(img_bgr, gamma=1.4):
 # Load UNet segmentation model from checkpoint
 # --------------------------
 def load_unet_model(model_path, num_classes=3, device=torch.device("cpu")):
+    """
+    Load a UNet segmentation model from a checkpoint.
+    Args:
+        model_path: path to the model weights file.
+        num_classes: number of output classes.
+        device: torch.device to map model to (CPU or CUDA).
+    Returns:
+        Loaded UNet model in eval mode.
+    """
     net = smp.Unet(
         encoder_name="resnet34",
         encoder_weights=None,
@@ -96,6 +126,17 @@ def load_unet_model(model_path, num_classes=3, device=torch.device("cpu")):
 # Apply UNet segmentation model on a frame, using pre/post-processing for weather
 # --------------------------
 def process_frame_unet(frame, net, device, target_size=(1392,512), snow_prob=0.0, rain_prob=0.0, fog_prob=0.0):
+    """
+    Apply UNet segmentation model on a frame, using pre/post-processing for weather.
+    Args:
+        frame: input BGR image as NumPy array.
+        net: UNet segmentation model.
+        device: torch.device to run model on.
+        target_size: tuple for resizing input.
+        snow_prob, rain_prob, fog_prob: probabilities for weather, trigger preprocessing.
+    Returns:
+        Segmentation mask as NumPy array (H, W), dtype int.
+    """
     # Apply weather-specific pre-processing if above thresholds
     if snow_prob > 0.55:
         frame = snow_preprocess(frame)
@@ -116,6 +157,13 @@ def process_frame_unet(frame, net, device, target_size=(1392,512), snow_prob=0.0
 # Segmentation mask coloring (background=black, road=red, lane=green)
 # --------------------------
 def colorize_mask(mask):
+    """
+    Map segmentation mask values to RGB colors for visualization.
+    Args:
+        mask: integer mask array, (H, W), with class indices.
+    Returns:
+        Color image as NumPy array (H, W, 3), dtype uint8.
+    """
     cmap = {0:(0,0,0), 1:(0,0,255), 2:(0,255,0)}
     h,w  = mask.shape
     cm   = np.zeros((h,w,3), dtype=np.uint8)
@@ -136,6 +184,16 @@ rain_model.load_state_dict(rain_state)
 rain_model = rain_model.to(device).eval()
 
 def detect_rain(frame, model, device, size=(224,224)):
+    """
+    Predict probability of rain in frame using a classifier.
+    Args:
+        frame: input BGR image as NumPy array.
+        model: PyTorch model (binary rain classifier).
+        device: torch.device for inference.
+        size: image resize shape for model.
+    Returns:
+        Dictionary: {'no_rain': float, 'rain': float}.
+    """
     rgb    = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     pil    = Image.fromarray(rgb).resize(size, Image.BILINEAR)
     tensor = TF.to_tensor(pil)
@@ -158,6 +216,16 @@ fog_model.load_state_dict(fog_state)
 fog_model = fog_model.to(device).eval()
 
 def detect_fog(frame, model, device, size=(224,224)):
+    """
+    Predict probability of fog in frame using a classifier.
+    Args:
+        frame: input BGR image as NumPy array.
+        model: PyTorch model (binary fog classifier).
+        device: torch.device for inference.
+        size: image resize shape for model.
+    Returns:
+        Dictionary: {'no_fog': float, 'fog': float}.
+    """
     rgb    = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     pil    = Image.fromarray(rgb).resize(size, Image.BILINEAR)
     tensor = TF.to_tensor(pil)
@@ -180,6 +248,17 @@ night_model.load_state_dict(night_state)
 night_model = night_model.to(device).eval()
 
 def detect_night(frame, model, device, size=(224,224), gamma=1.8):
+    """
+    Predict probability of night (vs. day) in frame using a classifier.
+    Args:
+        frame: input BGR image as NumPy array.
+        model: PyTorch model (binary night classifier).
+        device: torch.device for inference.
+        size: image resize shape for model.
+        gamma: gamma correction for low-light images.
+    Returns:
+        Dictionary: {'day': float, 'night': float}.
+    """
     dark = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)/255.0
     dark = np.power(dark, gamma)
     dark = (dark*255).astype(np.uint8)
@@ -204,6 +283,16 @@ snow_model.load_state_dict(snow_state)
 snow_model = snow_model.to(device).eval()
 
 def detect_snow(frame, model, device, size=(224,224)):
+    """
+    Predict probability of snow in frame using a classifier.
+    Args:
+        frame: input BGR image as NumPy array.
+        model: PyTorch model (binary snow classifier).
+        device: torch.device for inference.
+        size: image resize shape for model.
+    Returns:
+        Dictionary: {'no_snow': float, 'snow': float}.
+    """
     rgb    = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     pil    = Image.fromarray(rgb).resize(size, Image.BILINEAR)
     tensor = TF.to_tensor(pil)
@@ -217,6 +306,16 @@ def detect_snow(frame, model, device, size=(224,224)):
 # Bird’s‐eye view transformation (IPM)
 # --------------------------
 def get_bird_eye_view(img, src_pts, dst_pts, size):
+    """
+    Perform perspective transform to get bird's-eye (top-down) view.
+    Args:
+        img: input image as NumPy array.
+        src_pts: 4 source points (float32 array).
+        dst_pts: 4 destination points (float32 array).
+        size: output size as (width, height).
+    Returns:
+        Warped bird's-eye view as NumPy array.
+    """
     M = cv2.getPerspectiveTransform(src_pts, dst_pts)
     return cv2.warpPerspective(img, M, size, flags=cv2.INTER_NEAREST)
 
@@ -232,14 +331,41 @@ unet_model = load_unet_model(
 # Geometry and light beam helper functions (for matrix headlights simulation)
 # --------------------------
 def lerp(p1, p2, t):
+    """
+    Linear interpolation between two 2D points.
+    Args:
+        p1: tuple (x1, y1).
+        p2: tuple (x2, y2).
+        t: interpolation parameter (0.0-1.0).
+    Returns:
+        Interpolated point as tuple.
+    """
     return ((1-t)*p1[0]+t*p2[0], (1-t)*p1[1]+t*p2[1])
 
 def bilerp(quad, s, t):
+    """
+    Bilinear interpolation within a quadrilateral.
+    Args:
+        quad: list of 4 points (tuples).
+        s: interpolation parameter (horizontal).
+        t: interpolation parameter (vertical).
+    Returns:
+        Interpolated point as tuple.
+    """
     top    = lerp(quad[0], quad[1], s)
     bottom = lerp(quad[3], quad[2], s)
     return lerp(top, bottom, t)
 
 def compute_grid_vertices(quad, cols, rows):
+    """
+    Compute grid of vertices within a quadrilateral using bilinear interpolation.
+    Args:
+        quad: list of 4 points (tuples).
+        cols: number of columns.
+        rows: number of rows.
+    Returns:
+        2D list of points (vertices), shape (rows+1, cols+1).
+    """
     verts = []
     for i in range(rows+1):
         t = i/rows
@@ -252,6 +378,18 @@ def compute_grid_vertices(quad, cols, rows):
     return verts
 
 def fill_gradient_polygon(img, poly, nc, fc, color, alpha):
+    """
+    Fill a polygon with a linear gradient, for simulating light beams.
+    Args:
+        img: image to draw on (NumPy array).
+        poly: polygon points (NumPy array).
+        nc: near center point (tuple).
+        fc: far center point (tuple).
+        color: RGB color for beam (tuple).
+        alpha: maximum blend factor (0-1).
+    Returns:
+        None (modifies img in-place).
+    """
     mask = np.zeros(img.shape[:2], np.uint8)
     cv2.fillPoly(mask,[poly],255)
     x,y,wb,hb=cv2.boundingRect(poly)
@@ -273,6 +411,18 @@ def fill_gradient_polygon(img, poly, nc, fc, color, alpha):
         img[y:y+hb,x:x+wb,c]=np.clip(reg,0,255).astype(np.uint8)
 
 def draw_cell_cuboid(img,nc,fc,color,alpha,apply=True):
+    """
+    Draw a cuboid (6 faces) for a beam mesh cell with gradient fill.
+    Args:
+        img: image to draw on (NumPy array).
+        nc: list of 4 near plane points.
+        fc: list of 4 far plane points.
+        color: RGB color for beam.
+        alpha: blend strength.
+        apply: whether to fill faces or not.
+    Returns:
+        None (modifies img in-place).
+    """
     faces=[
         [nc[0],nc[1],nc[2],nc[3]],
         [fc[0],fc[1],fc[2],fc[3]],
@@ -291,6 +441,20 @@ def draw_cell_cuboid(img,nc,fc,color,alpha,apply=True):
 def add_glow_effect(img, near, far,
                     glow_color=(0,255,255), glow_alpha=0.4,
                     dilate_iter=30, blur_sizes=(15,31,61), weights=(0.6,0.3,0.1)):
+    """
+    Add a glow effect along a beam region (convex hull of near/far).
+    Args:
+        img: input image as NumPy array.
+        near: list of near-plane points.
+        far: list of far-plane points.
+        glow_color: color of the glow.
+        glow_alpha: intensity multiplier.
+        dilate_iter: dilation iterations.
+        blur_sizes: tuple of blur kernel sizes.
+        weights: blending weights for multi-scale blur.
+    Returns:
+        Image with glow as NumPy array.
+    """
     pts=np.array(near+far,np.int32)
     hull=cv2.convexHull(pts)
     mask=np.zeros(img.shape[:2],np.uint8)
@@ -310,6 +474,16 @@ def add_glow_effect(img, near, far,
     return np.clip(out,0,255).astype(np.uint8)
 
 def get_cell_detection_classes(poly,dets,conf_th=0.5,shrink=0.5):
+    """
+    Determine detected classes within a given polygonal cell, using YOLO detections.
+    Args:
+        poly: polygon (NumPy array).
+        dets: detections (N, 6 array: x1,y1,x2,y2,conf,class).
+        conf_th: confidence threshold.
+        shrink: bbox shrink factor for class region.
+    Returns:
+        Set of class indices present in the cell.
+    """
     x,y,wb,hb=cv2.boundingRect(poly)
     cell=(x,y,x+wb,y+hb)
     classes=set()
@@ -328,6 +502,21 @@ def get_cell_detection_classes(poly,dets,conf_th=0.5,shrink=0.5):
 def draw_full_cuboid_beam_mesh_with_detection(img,near_q,far_q,dets,
                                               cols,rows,color,
                                               alpha,sign_alpha):
+    """
+    Draw a grid mesh of cuboid beams, adjusting alpha based on detected classes (cars/signs).
+    Args:
+        img: image to draw on (NumPy array).
+        near_q: near plane quadrilateral (list of points).
+        far_q: far plane quadrilateral (list of points).
+        dets: YOLO detections array.
+        cols: number of columns in mesh.
+        rows: number of rows in mesh.
+        color: RGB color for beams.
+        alpha: normal alpha value for beam cells.
+        sign_alpha: lower alpha for sign-suppressed cells.
+    Returns:
+        List of hull polygons (cars detected).
+    """
     nv=compute_grid_vertices(near_q,cols,rows)
     fv=compute_grid_vertices(far_q,cols,rows)
     car_cells=[]

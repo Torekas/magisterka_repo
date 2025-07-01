@@ -27,12 +27,26 @@ IMG_STD  = [0.229, 0.224, 0.225]
 #            Loss Definitions
 # ---------------------------------------------
 class DiceLoss(nn.Module):
-    """Dice loss for multi-class segmentation. Promotes overlap between prediction and ground truth."""
+    """
+    Dice loss for multi-class segmentation. Promotes overlap between prediction and ground truth.
+    """
     def __init__(self, eps=1e-6):
+        """
+        Args:
+            eps: Smoothing epsilon to avoid division by zero.
+        """
         super().__init__()
         self.eps = eps
 
     def forward(self, logits, target):
+        """
+        Compute the Dice loss between logits and ground truth mask.
+        Args:
+            logits: Tensor of shape (N, C, H, W), unnormalized scores.
+            target: Tensor of shape (N, H, W), ground truth class indices.
+        Returns:
+            Scalar tensor: Dice loss (lower is better).
+        """
         num_cls    = logits.shape[1]
         prob       = F.softmax(logits, dim=1)
         tgt_onehot = F.one_hot(target, num_classes=num_cls).permute(0,3,1,2).float()
@@ -42,7 +56,14 @@ class DiceLoss(nn.Module):
         return 1 - dice.mean()  # Higher dice means better overlap, so loss is 1-dice
 
 def get_loss(num_classes, device):
-    """Returns a combined loss: weighted cross-entropy + 0.5x Dice."""
+    """
+    Returns a combined loss function: weighted cross-entropy + 0.5x Dice loss.
+    Args:
+        num_classes: Number of segmentation classes.
+        device: Device for the weights tensor.
+    Returns:
+        A callable loss function for segmentation (logits, masks) -> loss.
+    """
     weights = torch.tensor([1.0, 1.0, 2.0], device=device)  # Heavier penalty for class 2 (lane)
     ce      = nn.CrossEntropyLoss(weight=weights)
     dice    = DiceLoss()
@@ -52,10 +73,20 @@ def get_loss(num_classes, device):
 #            Dataset Definition
 # ---------------------------------------------
 class RoadLaneDataset(Dataset):
-    """Custom dataset for road (class 1) and lane (class 2) segmentation."""
+    """
+    Custom dataset for road (class 1) and lane (class 2) segmentation.
+    """
 
     def __init__(self, image_dir, road_mask_dir, lane_mask_dir,
                  transform=None, target_size=(1392, 512)):
+        """
+        Args:
+            image_dir: Directory with RGB images.
+            road_mask_dir: Directory with road segmentation masks.
+            lane_mask_dir: Directory with lane segmentation masks.
+            transform: Albumentations or torchvision transform pipeline.
+            target_size: Target resize size (width, height).
+        """
         self.image_dir      = image_dir
         self.road_mask_dir  = road_mask_dir
         self.lane_mask_dir  = lane_mask_dir
@@ -69,9 +100,20 @@ class RoadLaneDataset(Dataset):
         ])
 
     def __len__(self):
+        """
+        Returns:
+            Number of samples in the dataset.
+        """
         return len(self.image_files)
 
     def __getitem__(self, idx):
+        """
+        Load image and masks, apply transform, and return as tensors.
+        Args:
+            idx: Index of the sample.
+        Returns:
+            Tuple (image: Tensor[3,H,W], mask: Tensor[H,W], long/int type).
+        """
         # Load image and both masks
         img_name = self.image_files[idx]
         img_path = os.path.join(self.image_dir, img_name)
@@ -111,7 +153,13 @@ class RoadLaneDataset(Dataset):
 #             Model Initialisation
 # ---------------------------------------------
 def get_model(num_classes: int):
-    """Get a DeepLabV3+ResNet50 model pre-trained, but with head for num_classes."""
+    """
+    Get a DeepLabV3+ResNet50 model pre-trained, but with head for num_classes.
+    Args:
+        num_classes: Number of output segmentation classes.
+    Returns:
+        Model instance with new classifier heads for num_classes outputs.
+    """
     weights = DeepLabV3_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1
     model   = torchvision.models.segmentation.deeplabv3_resnet50(weights=weights)
     # Replace classifier head with new number of output channels
@@ -127,7 +175,17 @@ def get_model(num_classes: int):
 #            Training & Evaluation utils
 # ---------------------------------------------
 def train_one_epoch(model, dataloader, optimizer, criterion, device):
-    """Train model for one epoch and return average loss."""
+    """
+    Train model for one epoch and return average loss.
+    Args:
+        model: Model to train.
+        dataloader: Training DataLoader.
+        optimizer: Optimizer instance.
+        criterion: Loss function.
+        device: Target torch.device.
+    Returns:
+        Average training loss for the epoch (float).
+    """
     model.train()
     running = 0.0
     for i, (imgs, masks) in enumerate(dataloader):
@@ -143,7 +201,16 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
     return running / len(dataloader)
 
 def evaluate(model, dataloader, device, num_classes):
-    """Compute intersection-over-union (IoU) for each class."""
+    """
+    Compute intersection-over-union (IoU) for each class.
+    Args:
+        model: Model to evaluate.
+        dataloader: Validation DataLoader.
+        device: Target torch.device.
+        num_classes: Number of segmentation classes.
+    Returns:
+        List of IoU scores (float) for each class.
+    """
     model.eval()
     inter = [0] * num_classes
     uni   = [0] * num_classes
@@ -160,11 +227,25 @@ def evaluate(model, dataloader, device, num_classes):
 #            Checkpoint helpers
 # ---------------------------------------------
 def save_checkpoint(state: dict, filename: str):
-    """Save model/optimizer state to disk."""
+    """
+    Save model/optimizer state to disk.
+    Args:
+        state: Dictionary with model/optimizer states and other info.
+        filename: File path to save checkpoint.
+    """
     torch.save(state, filename)
 
 def load_checkpoint(model, optimizer, filename: str, device):
-    """Resume training from a checkpoint."""
+    """
+    Resume training from a checkpoint.
+    Args:
+        model: Model instance to load weights into.
+        optimizer: Optimizer instance to load state into.
+        filename: Path to checkpoint file.
+        device: torch.device to map checkpoint.
+    Returns:
+        The next epoch number to start from (int).
+    """
     if not os.path.exists(filename):
         return 1
     ckpt = torch.load(filename, map_location=device)
@@ -178,6 +259,11 @@ def load_checkpoint(model, optimizer, filename: str, device):
 #                    Main
 # ---------------------------------------------
 def main():
+    """
+    Main training entry point.
+    Sets up experiment, datasets, model, loss, optimizer, and runs training/validation loop.
+    Handles checkpointing and logging with Comet-ML.
+    """
     parser = argparse.ArgumentParser(description="DeepLabV3 road & lane segmentation with Albumentations + DiceLoss")
     parser.add_argument("--resume", action="store_true", help="Resume from checkpoint")
     parser.add_argument("--epochs", type=int, default=10)
