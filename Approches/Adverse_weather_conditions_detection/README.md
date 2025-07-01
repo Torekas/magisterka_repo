@@ -1,4 +1,3 @@
-Absolutely! Here’s your **edited README**, integrating clear references to the code, describing its structure and main logic, and making it easy for users or collaborators to understand how the provided code connects to the dataset and workflow. This is tailored for GitHub and suitable for users who want to get started with the project or understand the codebase.
 
 ---
 
@@ -6,16 +5,9 @@ Absolutely! Here’s your **edited README**, integrating clear references to the
 
 ## 1. Downloading the Dataset
 
-This project uses the [**ACDC** (Adverse Conditions Dataset with Correspondences)](https://acdc.vision.ee.ethz.ch/download), which contains urban driving images under various weather conditions:
+This project uses the [**ACDC** (Adverse Conditions Dataset with Correspondences)](https://acdc.vision.ee.ethz.ch/download), which contains urban driving images under various weather conditions: **fog**, **rain**, **snow**, **night**, and **clear** (reference).
 
-* **fog**
-* **rain**
-* **snow**
-* **night**
-* **clear** (reference)
-
-Download the file:
-**`rgb_anon_trainvaltest.zip`**
+Download the file: **`rgb_anon_trainvaltest.zip`**
 and extract it into your chosen directory.
 
 ---
@@ -75,92 +67,77 @@ Inside each split you will find images for the target condition (e.g. `fog/`) an
 
 ## 3. Model Training & Evaluation
 
-The core training, evaluation, and result visualization workflow is implemented in [`adverse_weather_detection.ipynb`](adverse_weather_detection.ipynb).
+The core workflow is implemented in [`adverse_weather_detection.ipynb`](adverse_weather_detection.ipynb).
+
 **Key points:**
 
-* The code is **fully commented** and structured for clarity and reproducibility.
+* The code is fully commented and structured for clarity and reproducibility.
 * Each weather condition is treated as a binary classification problem: *condition* vs. *clear*.
 * All major steps are automated: data loading, augmentation, model training, evaluation, and metrics reporting.
 
-### Main Steps (as implemented in the code):
+**Main Steps:**
 
-1. **Preprocessing & Augmentation**
-
-   * Image data is augmented during training for better generalization.
-   * Separate transforms for training and evaluation are used.
-
-2. **Model Definition**
-
-   * Uses a pretrained ResNet-18 as the backbone.
-   * The last layer is replaced for binary classification.
-
-3. **Training and Validation**
-
-   * For each weather condition (`fog`, `rain`, `snow`, `night`), the model is trained to distinguish between the condition and clear weather.
-   * Progress (losses, accuracy) is logged and saved.
-
-4. **Testing & Model Saving**
-
-   * After training, the model is evaluated on the test set for each condition.
-   * Model weights are saved as `model_<condition>_new.pth`.
-
-5. **Visualization & Metrics**
-
-   * Generates accuracy comparison bar plots (`accuracy_comparison.html`).
-   * Plots validation loss curves for all conditions (`val_loss_comparison.html`).
-   * Exports a styled summary table of quantitative metrics (`metrics_table.html` and `metrics_summary.csv`).
+1. **Preprocessing & Augmentation**: Image data is augmented for better generalization. Separate transforms for train/eval.
+2. **Model Definition**: Uses a pretrained ResNet-18 backbone with a custom last layer.
+3. **Training and Validation**: Trained separately for each condition to distinguish it from clear weather. Logs progress.
+4. **Testing & Model Saving**: Evaluates on test set; model weights saved as `model_<condition>_new.pth`.
+5. **Visualization & Metrics**: Generates bar plots, loss curves, and exports summary tables.
 
 ---
 
 ## 4. Sample Images
 
-Below are example images (either generated or sample previews) for each category:
+<table>
+  <tr>
+    <td align="center"><b>Fog</b><br><img src="./demo/fog.png" width="320" alt="Example: Fog"/></td>
+    <td align="center"><b>Rain</b><br><img src="./demo/rain.png" width="320" alt="Example: Rain"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Snow</b><br><img src="./demo/snow.png" width="320" alt="Example: Snow"/></td>
+    <td align="center"><b>Night</b><br><img src="./demo/night.png" width="320" alt="Example: Night"/></td>
+  </tr>
+</table>
 
-### Fog:
-
-<img src="./demo/fog.png" width="640" height="360" alt="Example: Fog" />
-
-### Rain:
-
-<img src="./demo/rain.png" width="640" height="360" alt="Example: Rain" />
-
-### Night:
-
-<img src="./demo/night.png" width="640" height="360" alt="Example: Night" />
-
-### Snow:
-
-<img src="./demo/snow.png" width="640" height="360" alt="Example: Snow" />
-
-Reference (clear) images are included for direct comparison.
+Reference (clear) images are included for direct comparison in each subfolder.
 
 ---
 
 ## 5. Results & Next Steps
 
-* **Model performance** (accuracy, loss) for each weather condition is reported in the outputs below.
-<img src="./demo/ACDC_table.png" width="340" height="100" alt="Example: Snow" />
-<img src="./demo/accuracy_comparison_ACDC.png" width="640" height="360" alt="Example: Snow" />
-* **Next Steps:**
+<table>
+  <tr>
+    <td>
+      <b>Metrics Table</b><br>
+      <img src="./demo/ACDC_table.png" width="340" alt="Metrics Table"/>
+    </td>
+    <td>
+      <b>Accuracy Comparison</b><br>
+      <img src="./demo/accuracy_comparison_ACDC.png" width="340" alt="Accuracy Comparison"/>
+    </td>
+  </tr>
+</table>
 
-  * Adjust the model architecture, hyperparameters, or data augmentation for better performance.
-  * Extend the dataset (e.g., using KITTI or PVDN) for improved robustness.
-  * Optimize training (e.g., use a more powerful GPU, mixed precision).
+**Next Steps:**
+
+* Adjust model architecture, hyperparameters, or augmentations for better performance.
+* Extend the dataset (e.g., add KITTI or PVDN) for improved robustness.
+* Optimize training (e.g., more powerful GPU, mixed precision).
 
 ---
 
 ## 6. Running the Code
 
-To train and evaluate the models on your own machine:
+To train and evaluate models:
 
-1. Install requirements (PyTorch, torchvision, pandas, plotly, etc.).
+1. Install requirements (`PyTorch`, `torchvision`, `pandas`, `plotly`, etc.).
 2. Adjust the `data_root` path in `adverse_weather_detection.ipynb` to match your dataset location.
 
 ---
 
 ## 7. File Overview
 
-* `adverse_weather_detection.ipynb` — Main script for preprocessing, training, evaluation, and reporting.
-  *See in-code comments for detailed explanation of every function and step.*
+* `adverse_weather_detection.ipynb` — Main notebook for preprocessing, training, evaluation, and reporting.
+
+  * *See in-code comments for details on every function and step.*
 
 ---

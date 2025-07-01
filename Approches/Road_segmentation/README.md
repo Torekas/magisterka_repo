@@ -1,25 +1,61 @@
+
+---
+
 ## Road & Lane Segmentation Benchmark
 
-This repository implements and compares a range of semantic‑segmentation approaches on a custom dash‑cam dataset collected in Makassar City (374 images, 2560×1600px, four classes: Background, Road, Lane‑solid, Lane‑dashed).
+This folder implements and compares a range of semantic-segmentation approaches on a custom dash-cam datasets collected by me or used ready ones.
+Three classes: Driving area, Lane markings, other areas.
+
+---
 
 ### Tested Models
 
-* **SegFormer**
-  Lightweight transformer encoder + MLP decoder; achieved 97.8% pixel‑accuracy and 72.2% mIoU on training, 96.8% / 74.0% on validation.
+#### **SegFormer**
 
-* **DeepLabV3 + ResNet-50**
-  Atrous convolutions, ASPP module; chosen for night scenarios due to superior lane IoU and real‑time viability.
+* **Dataset:** Makassar City dash-cam set (374 images, 2560×1600px, 4 classes: Background, Road, Lane-solid, Lane-dashed)
+* **Approach:** Lightweight transformer encoder with MLP decoder
+* **Performance:** 97.8% pixel accuracy, 72.2% mIoU (train), 96.8% pixel accuracy, 74.0% mIoU (validation)
 
-* **U-Net (basic & expanded)**
+---
 
-  * **Basic** (scratch U-Net): \~88% road IoU, \~30% lane IoU, \~58% mean IoU.
-  * **ResNet-34 encoder + Albumentations**: \~83% road, \~38% lane, \~60% mean IoU on adverse conditions.
+#### **DeepLabV3 + ResNet-50**
 
-* **YOLOP**
-  End‑to‑end multitask (object detection + drivable‑area segmentation + lane marking) with real‑time efficiency (inference \~0.26s/frame).
+* **Dataset:** Custom, compiled from public night-driving videos:
 
-* **OpenCV Pipeline**
-  Classical CV (gamma correction, Canny, Hough, curve fitting, Kalman smoothing). Fast, lightweight, but less robust under poor or missing markings.
+  * [Paul Maloney (20 min)](https://youtu.be/XTzppDgByC4?si=2aH5rI1DXK4q_b0r): City and suburb at night
+  * [jdmriding (4 min)](https://youtu.be/JJzWJOLrsp4?si=-TtQPn5KAsc2crMn): Night highway, multiple passing vehicles
+  * [GitHub: Night lane detection w/ Kalman](https://github.com/diptamath/Lane-detection-in-Night-Enviroment-using-Kalman-Filter): Passing/overtaking scenes on night highways
+* **Samples:** 3,003 (train), 883 (validation)
+* **Approach:** Atrous convolutions, ASPP module
+* **Why:** Best lane IoU and real-time viability in night scenarios
+
+---
+
+#### **U-Net (Basic & Expanded)**
+
+* **Dataset:** Same as DeepLabV3
+* **Variants:**
+
+  * **Basic:** Scratch U-Net (\~88% road IoU, \~30% lane IoU, \~58% mean IoU)
+  * **Expanded:** ResNet-34 encoder + Albumentations (\~83% road, \~38% lane, \~60% mean IoU in adverse conditions)
+
+---
+
+#### **YOLOP**
+
+* **Dataset:** [BDD100K](https://dl.cv.ethz.ch/bdd100k/data/) (public driving dataset with labels for cars, people, traffic signs)
+* **Approach:** End-to-end multitask (object detection, drivable area segmentation, lane marking)
+* **Performance:** Real-time efficient (\~0.26s per frame)
+
+---
+
+#### **OpenCV Pipeline**
+
+* **Dataset:** Used on above sets for baseline comparison
+* **Approach:** Classical CV — gamma correction, Canny edge, Hough transform, curve fitting, Kalman smoothing
+* **Notes:** Fast and lightweight, but less robust with faint/missing markings
+
+---
 
 ### Performance Metrics
 
@@ -32,21 +68,28 @@ This repository implements and compares a range of semantic‑segmentation appro
 |                              YOLOP | Real‑time automotive   |     ―    |     ―    | Real‑time efficient          |
 |                             OpenCV | Various conditions     | Moderate | Moderate | Moderate, resource‑efficient |
 
-<img src="./demo/opencv_det.png" controls width="640" height="360"></img>
+---
 
-<img src="./demo/Road_iou_vs_step_less (1).png" controls width="640" height="360"></img>
+<table>
+  <tr>
+    <td align="center"><b>OpenCV Lane/Road Detection</b><br><img src="./demo/opencv_det.png" width="320" alt="OpenCV Lane & Road"/></td>
+    <td align="center"><b>Road IoU vs Training Step</b><br><img src="./demo/Road_iou_vs_step_less (1).png" width="320" alt="Road IoU Plot"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Mean IoU vs Training Step</b><br><img src="./demo/Mean_iou_vs_step_less (1).png" width="320" alt="Mean IoU Plot"/></td>
+    <td align="center"><b>Lane IoU vs Training Step</b><br><img src="./demo/Lane_iou_vs_step_less (1).png" width="320" alt="Lane IoU Plot"/></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Composite Results Table</b><br><img src="./demo/composite_table_new.png" width="350" alt="Results Table"/></td>
+  </tr>
+</table>
 
-<img src="./demo/Mean_iou_vs_step_less (1).png" controls width="640" height="360"></img>
-
-<img src="./demo/Lane_iou_vs_step_less (1).png" controls width="640" height="360"></img>
-
-<img src="./demo/composite_table_new.png" controls width="300" height="150"></img>
-
-
+---
 
 ### Final Choice
 
 * **U-Net34 (ResNet-34 + Albumentations)**
-  Offers the best trade‑off: 60% mean IoU on mixed conditions, \~9.5h training, lightweight deployment.
+  Offers the best trade-off: 60% mean IoU on mixed conditions, \~9.5h training, lightweight deployment.
 
 ---
+

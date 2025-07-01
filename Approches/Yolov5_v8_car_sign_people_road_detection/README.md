@@ -1,12 +1,15 @@
+
+---
+
 # Road & Car Object Detection with YOLOv5 and YOLOv8
 
 ---
 
 ## Table of Contents
 
-1. [YOLOv5 Object Detection from Car Recordings](#yolov5-object-detection-from-car-recordings)  
-2. [YOLOv8 Road Object Detection](#yolov8-road-object-detection)  
-3. [Comparison of YOLOv5 vs. YOLOv8](#comparison-of-yolov5-vs-yolov8)  
+1. [YOLOv5 Object Detection from Car Recordings](#yolov5-object-detection-from-car-recordings)
+2. [YOLOv8 Road Object Detection](#yolov8-road-object-detection)
+3. [Comparison of YOLOv5 vs. YOLOv8](#comparison-of-yolov5-vs-yolov8)
 
 ---
 
@@ -14,26 +17,26 @@
 
 This section shows how to:
 
-1. Create a custom dataset from car recordings  
-2. Label the dataset in YOLO format  
-3. Train YOLOv5 models  
-4. Evaluate and compare their performance  
+1. Create a custom dataset from car recordings
+2. Label the dataset in YOLO format
+3. Train YOLOv5 models
+4. Evaluate and compare their performance
 
 ### 1. Dataset Creation
 
 #### 1.1 Data Sources
 
-- **KITTI** (Raw Data): [KITTI Raw Data](https://www.cvlibs.net/datasets/kitti/raw_data.php)  
-- **PVDN** (Provident Vehicle Detection at Night): [PVDN on Kaggle](https://www.kaggle.com/datasets/saralajew/provident-vehicle-detection-at-night-pvdn)  
-- **GTSDB** (German Traffic Sign Detection Benchmark): [GTSDB Dataset](https://benchmark.ini.rub.de/gtsdb_dataset.html)
+* **KITTI** (Raw Data): [KITTI Raw Data](https://www.cvlibs.net/datasets/kitti/raw_data.php)
+* **PVDN** (Provident Vehicle Detection at Night): [PVDN on Kaggle](https://www.kaggle.com/datasets/saralajew/provident-vehicle-detection-at-night-pvdn)
+* **GTSDB** (German Traffic Sign Detection Benchmark): [GTSDB Dataset](https://benchmark.ini.rub.de/gtsdb_dataset.html)
 
-Total: ~4000 images.
+Total: \~4000 images.
 
 #### 1.2 Image Format Conversion
 
 Convert `.ppm` → `.png` via Pillow:
 
-```bash
+```python
 from PIL import Image
 import os
 
@@ -44,7 +47,7 @@ for fn in os.listdir(in_folder):
     if fn.endswith(".ppm"):
         img = Image.open(os.path.join(in_folder, fn))
         img.save(os.path.join(out_folder, fn.replace(".ppm", ".png")))
-````
+```
 
 #### 1.3 Resizing & Split
 
@@ -101,9 +104,16 @@ Experiments: **yolov5s**, **yolov5m**, **yolov5x**
 
 Outputs saved in `runs/train/exp*`.
 
-<img src="./demo_v5/0000000271.png" controls width="640" height="360"></img>
-
-<img src="./demo_v5/yolov5_detection.gif" controls width="640" height="360"></img>
+<table>
+  <tr>
+    <td align="center"><b>YOLOv5 Sample Detection</b><br>
+      <img src="./demo_v5/0000000271.png" width="320" alt="YOLOv5 Detection"/>
+    </td>
+    <td align="center"><b>YOLOv5 Inference Animation</b><br>
+      <img src="./demo_v5/yolov5_detection.gif" width="320" alt="YOLOv5 Inference GIF"/>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -181,9 +191,17 @@ python live.py \
 
 Results & logs in `runs/`.
 
-<img src="./demo_v8/yolov8_visualisation.gif" controls width="640" height="360"></img>
+<table>
+  <tr>
+    <td align="center"><b>YOLOv8 Visualization GIF</b><br>
+      <img src="./demo_v8/yolov8_visualisation.gif" width="320" alt="YOLOv8 Visualisation"/>
+    </td>
+    <td align="center"><b>YOLOv8 Road Detection Output</b><br>
+      <img src="./demo_v8/road_detection_pt.gif" width="320" alt="YOLOv8 Road Detection"/>
+    </td>
+  </tr>
+</table>
 
-<img src="./demo_v8/road_detection_pt.gif" controls width="640" height="360"></img>
 ---
 
 ## Comparison of YOLOv5 vs. YOLOv8
@@ -201,30 +219,42 @@ Based on training curves (first 100 epochs) and a composite score summary:
 
   * YOLOv8 stabilizes around **0.26–0.28**
   * YOLOv5 around **0.20–0.22**
-
 * **mAP\@0.5**
 
   * YOLOv8: \~**0.40–0.45**
   * YOLOv5: \~**0.50–0.60**
-
 * **Precision**
 
   * YOLOv5 achieves higher and more stable precision (\~0.65–0.75)
   * YOLOv8 precision fluctuates more (\~0.50–0.80)
-
 * **Recall**
 
   * YOLOv5 reaches \~**0.50–0.60**
   * YOLOv8 around **0.38–0.43**
 
-<img src="./demo/output (1).png" controls width="640" height="360"></img>
-<img src="./demo/output (2).png" controls width="640" height="360"></img>
-<img src="./demo/output (3).png" controls width="640" height="360"></img>
-<img src="./demo/output (4).png" controls width="640" height="360"></img>
-
-<img src="./demo/composite_table_yolo (1).png" controls width="200" height="100"></img>
-
-
+<table>
+  <tr>
+    <td align="center"><b>YOLOv5 vs YOLOv8 : Loss vs Epoch</b><br>
+      <img src="./demo/output (1).png" width="320" alt="YOLOv5 Loss"/>
+    </td>
+    <td align="center"><b>YOLOv5 vs YOLOv8: Loss vs Epoch</b><br>
+      <img src="./demo/output (2).png" width="320" alt="YOLOv8 Loss"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>YOLOv5 vs YOLOv8: mAP@0.5 vs Epoch</b><br>
+      <img src="./demo/output (3).png" width="320" alt="YOLOv5 mAP@0.5"/>
+    </td>
+    <td align="center"><b>YOLOv5 vs YOLOv8: mAP@0.5 vs Epoch</b><br>
+      <img src="./demo/output (4).png" width="320" alt="YOLOv8 mAP@0.5"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Composite Table Summary</b><br>
+      <img src="./demo/composite_table_yolo (1).png" width="200" alt="Composite Table"/>
+    </td>
+  </tr>
+</table>
 
 ### Trade-Offs
 
@@ -240,4 +270,4 @@ Based on training curves (first 100 epochs) and a composite score summary:
 * **Models**: Ultralytics YOLOv5 & YOLOv8
 * **Annotation Tools**: LabelImg, labelme
 
-Refer to each project’s LICENSE for full terms.
+---
