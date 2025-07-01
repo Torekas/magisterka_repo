@@ -111,7 +111,7 @@ Each approach is accompanied by a dedicated `.ipynb` notebook or `.py` file in e
 <table align = "center">
   <tr>
     <td align="center"><b>Simulator in action</b><br>
-      <img src="./demo/gif_master_thesis.gif" width="920" height="220" alt="YOLOv5 Inference GIF"/>
+      <img src="./demo/gif_master_thesis.gif" width="820" height="220" alt="YOLOv5 Inference GIF"/>
     </td>
   </tr>
 </table>
