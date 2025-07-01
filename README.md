@@ -1,41 +1,58 @@
+
+---
+
 # Master Thesis
 
 This thesis focuses on intelligent Matrix headlights in automobiles. The goal is to identify the best possible solution for detecting the most crucial elements on the road for drivers, leveraging various models.
 
 Currently, this repository contains several approaches, including:
 
-- **Distinguishing between day and night.**  
-- **Recognizing different weather conditions (snow, rain, fog, and night) based on diverse image sets.**  
-- **Detecting important road elements such as traffic signs, pedestrians, vehicles, and the roadway itself. Three solutions are used here:**  
-  - **A solution using the YOLOv5 model.**  
-  - **A solution using the YOLOv8 model.**  
-  - **A solution leveraging an ONNX-based model.**
-- **Segmention of the road with different approaches**
-  - **SegFormer**
-  - **YOLOP**
-  - **U-Net + ResNet-34**
-  - **DeepLabV3+ResNet-50/100**
+* **Distinguishing between day and night.**
+* **Recognizing different weather conditions** (snow, rain, fog, and night) based on diverse image sets.
+* **Detecting important road elements** such as traffic signs, pedestrians, vehicles, and the roadway itself. Three solutions are used here:
 
-- **And finally the whole working simulator as a combination of the all components with the mechanism of steering the matrix headlights**
-- **And possbile future work on building the prototype, how it should work**
+  * **A solution using the YOLOv5 model.**
+  * **A solution using the YOLOv8 model.**
+  * **A solution leveraging an ONNX-based model.**
+* **Segmentation of the road with different approaches:**
 
-Each approach is accompanied by a dedicated *.ipynb notebook, which explains the steps taken in each case.
+  * **SegFormer**
+  * **YOLOP**
+  * **U-Net + ResNet-34**
+  * **DeepLabV3+ResNet-50/100**
+* **A full working simulator** that combines all components with a mechanism for steering the matrix headlights.
+* **Future work**: possible prototype design and deployment concepts.
 
-## Workflow Pipeline (v2)
-<img src="./demo/workflow_master_thesis.png" controls width="640" height="360"></img>
+Each approach is accompanied by a dedicated `.ipynb` notebook, which explains the steps taken in each case.
 
-[//]: # (<img src="./demo/Workflow_v2_1.png" controls width="640" height="360"></img>)
+---
 
-## Workflow Pipeline (v1)
-<img src="./demo/Workflow.png" controls width="640" height="360"></img>
+## Workflow Pipelines & Experiment Tracking
 
-## Comet ML
-All results are also stored in the dedicated experiments on the Comet ML platform:
-<img src="./demo/comet.png" controls width="640" height="360"></img>
+<table>
+  <tr>
+    <td align="center"><b>Workflow Pipeline (v2)</b><br>
+      <img src="./demo/workflow_master_thesis.png" width="320" alt="Workflow Pipeline v2"/>
+    </td>
+    <td align="center"><b>Workflow Pipeline (v1)</b><br>
+      <img src="./demo/Workflow.png" width="320" alt="Workflow Pipeline v1"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Comet ML Experiment Tracking</b><br>
+      <img src="./demo/comet.png" width="640" alt="Comet ML Tracking"/>
+    </td>
+  </tr>
+</table>
 
-# Computers' specs
-## Laptop:
-### CPU and Overall Memory Status:
+---
+
+# Computers' Specs
+
+## Laptop
+
+### CPU and Overall Memory Status
+
 | **Parameter**                  | **Value**                           |
 | ------------------------------ | ----------------------------------- |
 | MaxClockSpeed (MHz)            | 2592                                |
@@ -52,15 +69,19 @@ All results are also stored in the dedicated experiments on the Comet ML platfor
 | Virtual Memory: In Use (MB)    | 18,399                              |
 | VRam (MB)                      | 8,006                               |
 
-### Installed GPU Adapters:
+### Installed GPU Adapters
 
 | AdapterRAM (GB) | DriverVersion  | Name                    | VideoModeDescription      |
 | --------------- | -------------- | ----------------------- | ------------------------- |
 | 1.00            | 26.20.100.6911 | Intel® UHD Graphics 630 | 1920 × 1080, 32-bit color |
 | 4.00            | 32.0.15.7640   | NVIDIA GeForce RTX 2070 | 1920 × 1080, 32-bit color |
 
-## PC:
-### CPU Specifications and Overall Memory Status:
+---
+
+## PC
+
+### CPU Specifications and Overall Memory Status
+
 | **Parameter**                  | **Value**                  |
 | ------------------------------ | -------------------------- |
 | MaxClockSpeed (MHz)            | 2500                       |
@@ -78,8 +99,10 @@ All results are also stored in the dedicated experiments on the Comet ML platfor
 | Virtual Memory: In Use (MB)    | 21,746                     |
 | VRam (MB)                      | 7,949                      |
 
-### Installed GPU Adapter:
+### Installed GPU Adapter
+
 | AdapterRAM (GB) | DriverVersion | Name                       | VideoModeDescription      |
 | --------------- | ------------- | -------------------------- | ------------------------- |
 | 4.00            | 32.0.15.6103  | NVIDIA GeForce RTX 4060 Ti | 1920 × 1080, 32-bit color |
 
+---
