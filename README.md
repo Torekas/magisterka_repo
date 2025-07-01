@@ -25,6 +25,38 @@ Currently, this repository contains several approaches, including:
 
 Each approach is accompanied by a dedicated `.ipynb` notebook or `.py` file in each approach subfolder, which explains the steps taken in each case.
 
+## Key subdirectories:
+
+* **Approches/Adverse_weather_conditions_detection:**
+Contains code and notebooks for classifying fog, rain, snow, and night conditions using the ACDC dataset. The README explains the dataset layout, training workflow and provides sample results.
+
+* **Approches/Final_simulator_and_future_implementation:**
+Implements a simulator that merges object detection, road segmentation, and weather classifiers to adjust simulated matrix headlights in real time. The README outlines its system overview, processing pipeline, example outputs, and future hardware integration ideas.
+The simulator.py script loads YOLOv5, a U-Net model, and four ResNet-18 weather classifiers, then processes video frames to control simulated headlight beams:
+
+```python
+yolo_model = torch.hub.load('ultralytics/yolov5', 'yolov5x', pretrained=True).to(device).eval()
+unet_model = load_unet_model(r"D:\night_segmentation_new\unet34_night_final_resized.pth", num_classes=3, device=device)
+rain_model = models.resnet18(pretrained=False)
+fog_model = models.resnet18(pretrained=False)
+night_model = models.resnet18(pretrained=False)
+snow_model = models.resnet18(pretrained=False)
+```
+
+* **Approches/ONNX_road_lines_car_detection:**
+Provides instructions for using the HybridNets ONNX/TFLite project for simultaneous road and vehicle detection, including environment setup and running the detection.
+
+* **Approches/Road_segmentation:**
+Contains benchmarking of several segmentation models (SegFormer, DeepLabV3+ResNet50, U-Net, YOLOP, an OpenCV baseline). The README summarizes datasets, model performances and includes sample plots.
+Training scripts for U-Net and DeepLabV3 show how datasets are loaded, losses computed, and metrics logged to Comet ML.
+
+* **Approches/Yolov5_v8_car_sign_people_road_detection:**
+Holds code/notebooks for object detection using YOLOv5 and YOLOv8. The README describes dataset creation, training procedures, and a comparison of YOLOv5 vs. YOLOv8 performance.
+Scripts such as train v8.py and live v8.py provide training and inference routines for YOLOv8.
+
+* **demo:**
+Contains workflow diagrams and GIFs used in the README to illustrate the processing pipeline and simulator in action.
+
 ---
 
 ## Workflow Pipelines & Experiment Tracking
