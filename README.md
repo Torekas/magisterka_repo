@@ -106,3 +106,12 @@ Each approach is accompanied by a dedicated `.ipynb` notebook, which explains th
 | 4.00            | 32.0.15.6103  | NVIDIA GeForce RTX 4060 Ti | 1920 × 1080, 32-bit color |
 
 ---
+
+# Simulator in action
+<table>
+  <tr>
+    <td align="center"><b>Simulator in action</b><br>
+      <img src="./demo/gif_master_thesis.gif" width="320" alt="YOLOv5 Inference GIF"/>
+    </td>
+  </tr>
+</table>
