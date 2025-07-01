@@ -5,7 +5,7 @@
 
 ## 1. Downloading the Dataset
 
-This project uses the [**ACDC** (Adverse Conditions Dataset with Correspondences)](https://acdc.vision.ee.ethz.ch/download), which contains urban driving images under various weather conditions: **fog**, **rain**, **snow**, **night**, and **clear** (reference).
+This part of the project uses the [**ACDC** (Adverse Conditions Dataset with Correspondences)](https://acdc.vision.ee.ethz.ch/download), which contains urban driving images under various weather conditions: **fog**, **rain**, **snow**, **night**, and **clear** (reference).
 
 Download the file: **`rgb_anon_trainvaltest.zip`**
 and extract it into your chosen directory.
